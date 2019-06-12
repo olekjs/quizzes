@@ -10,7 +10,7 @@
                 <button class="btn btn-success btn-lg">Wróć do strony głównej</button>
             </div>
             <template v-if="stage && isStarted && !isEndGame">
-                <questionsRange></questionsRange>
+                <questionsRange :stageInformations="stageInformations"></questionsRange>
                 <stage :stage="stage" v-on:saveAnswer="saveAnswer"></stage>
             </template>
             <template v-if="isEndGame">
@@ -31,7 +31,10 @@
                 isEndGame: false,
                 stage: {},
                 answers: [],
-                actualStage: 0,
+                stageInformations: {
+                    actualStage: 0,
+                    allStages: this.game.stages.length -1,
+                },
             }
         },
         components: {
@@ -45,7 +48,7 @@
                 this.getStage();
             },
             getStage: function() {
-                this.stage = this.game.stages[this.actualStage];
+                this.stage = this.game.stages[this.stageInformations.actualStage];
 
             },
             saveAnswer: function(answer, question) {
@@ -54,16 +57,19 @@
                 this.nextQuestion();
             },
             nextQuestion: function() {
-                let maxStages = this.game.stages.length - 1;
+                let stageInformations = this.stageInformations;
 
-                if (this.actualStage == maxStages) {
+                if (stageInformations.actualStage == stageInformations.allStages) {
                     this.isEndGame = true;
                     return;
                 }
 
-                this.actualStage++;
+                this.stageInformations.actualStage++;
                 this.getStage();
             },
+        },
+        beforeRouteLeave (to, from , next) {
+            const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
         }
     }
 </script>
