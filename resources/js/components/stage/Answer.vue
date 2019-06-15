@@ -1,6 +1,6 @@
 <template>
     <div class="col-md-6 col-6">
-       <button class="btn btn-outline-primary btn-lg btn-block mb-2" v-on:click="select">
+        <button class="btn btn-outline-primary btn-lg btn-block mb-2" v-on:click="select">
             {{ answer.content }}
         </button>
     </div>
@@ -17,6 +17,11 @@
         data: function() {
             return {
                 
+            }
+        },
+        created: function() {
+            if (this.answer.type == 'correct') {
+                this.$emit('saveCorrect', this.answer);
             }
         },
         methods: {

@@ -1,22 +1,18 @@
 <template>
     <div>
-        <div class="row">
-            <!-- 
-                @TODO
-                Aby zagrać w grę trzeba wpisać nick
-             -->
-            <div class="col-md-12 text-center" v-if="!isStarted">
-                <button class="btn btn-success btn-lg" v-on:click="startGame">Zacznij grę</button>
-                <button class="btn btn-success btn-lg">Wróć do strony głównej</button>
-            </div>
-            <template v-if="stage && isStarted && !isEndGame">
-                <questionsRange :stageInformations="stageInformations"></questionsRange>
-                <stage :stage="stage" v-on:saveAnswer="saveAnswer"></stage>
-            </template>
-            <template v-if="isEndGame">
-                <endGame :answers="this.answers"></endGame>
-            </template>
-        </div>
+        <template>
+            <settings :gameId="game.id" v-on:startGame="startGame" v-if="!isStarted"></settings>
+        </template>
+        <template v-if="stage && isStarted && !isEndGame">
+            <questionsRange :informations="informations"></questionsRange>
+            <stage :stage="stage" v-on:saveAnswer="saveAnswer"></stage>
+        </template>
+        <template v-if="isEndGame">
+            <endGame :answers="this.answers"></endGame>
+        </template>
+        <template>
+            <notifications group="alert" width="400px" position="top center" class="mt-2"/>
+        </template>
     </div>
 </template>
 
@@ -31,45 +27,49 @@
                 isEndGame: false,
                 stage: {},
                 answers: [],
-                stageInformations: {
-                    actualStage: 0,
+                playerId: '',
+                informations: {
+                    currentStage: 0,
                     allStages: this.game.stages.length -1,
                 },
             }
         },
         components: {
+            settings: require('./Settings.vue').default,
             stage: require('./Stage.vue').default,
             questionsRange: require('./QuestionsRange.vue').default,
             endGame: require('./EndGame.vue').default,
         },
         methods: {
-            startGame: function() {
+            startGame: function(nickname, playerId) {
+                this.playerId = playerId;
                 this.isStarted = true;
                 this.getStage();
             },
             getStage: function() {
-                this.stage = this.game.stages[this.stageInformations.actualStage];
+                this.stage = this.game.stages[this.informations.currentStage];
 
             },
-            saveAnswer: function(answer, question) {
+            saveAnswer: function(answer, question, correct) {
                 answer.question_content = question;
-                this.answers.push(answer);
+                let selected = answer;
+                this.answers.push({selected, correct});
                 this.nextQuestion();
             },
             nextQuestion: function() {
-                let stageInformations = this.stageInformations;
+                let informations = this.informations;
 
-                if (stageInformations.actualStage == stageInformations.allStages) {
-                    this.isEndGame = true;
+                if (informations.currentStage == informations.allStages) {
+                    this.endGame();
                     return;
                 }
 
-                this.stageInformations.actualStage++;
+                this.informations.currentStage++;
                 this.getStage();
             },
+            endGame: function() {
+                this.isEndGame = true;
+            },
         },
-        beforeRouteLeave (to, from , next) {
-            const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-        }
     }
 </script>

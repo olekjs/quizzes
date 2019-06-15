@@ -1,12 +1,14 @@
 <template>
-    <div class="col-md-12">
-        <div class="card mb-2">
-            <div class="card-body text-center shadow-sm">
-                <strong><h3>{{ stage.question.content }}</h3></strong>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-2">
+                <div class="card-body text-center shadow-sm">
+                    <strong><h3>{{ stage.question.content }}</h3></strong>
+                </div>
             </div>
-        </div>
-        <div class="row text-center">
-            <answer v-for="answer in shuffledAnswers" :key="answer.id" :answer="answer" v-on:select="selectAnswer"></answer>
+            <div class="row text-center">
+                <answer v-for="answer in shuffledAnswers" :key="answer.id" :answer="answer" v-on:select="selectAnswer" v-on:saveCorrect="saveCorrect"></answer>
+            </div>
         </div>
     </div>
 </template>
@@ -21,11 +23,11 @@
         },
         data: function() {
             return {
-                //
+                correctAnswer: [],
             }
         },
         components: {
-            answer: require('./Answer.vue').default,
+            answer: require('./stage/Answer.vue').default,
         },
         computed: {
             shuffledAnswers: function() {
@@ -45,9 +47,12 @@
 
                     return arr;
             },
-            selectAnswer: function(selectedAnswer) {
-                this.$emit('saveAnswer', selectedAnswer, this.stage.question.content);
+            selectAnswer: function(selected) {
+                this.$emit('saveAnswer', selected, this.stage.question.content, this.correctAnswer);
             },
+            saveCorrect: function(answer) {
+                this.correctAnswer = answer;
+            }
         },
     }
 </script>
