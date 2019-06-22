@@ -14,14 +14,16 @@
             </div>
             <div class="col-md-8">
                 <template>
-                    <settings :categories="categories"></settings>
+                    <settings :categories="categories" v-on:saveGame="saveGame"></settings>
                 </template>
                 <template>
-                    <question :currentStage="stages[currentStage]" v-on:saveQuestion="saveQuestion"></question>
+                    <question :currentStage="stages[currentStage]"></question>
                 </template>
-                </div>
             </div>
         </div>
+        <template>
+            <notifications group="alert" width="400px" position="top center" class="mt-2"/>
+        </template>
     </div>
 </template>
 <script>
@@ -57,7 +59,6 @@
                         },
                     }],
                 currentStage: 0,
-                stageLength: 2,
             }
         },
         components: {
@@ -66,9 +67,23 @@
             question: require('../create-game/Question.vue').default,
         },
         methods: {
+            saveGame: function(settings) {
+                if (!this.validateSettings(settings)) {
+                    return;
+                }
+
+                axios.post('/api/create/game', {
+                    stages: this.stages,
+                    settings: settings,
+                }).then((response) => {
+                    console.log(response.data);
+                }).catch(() => {
+                    this.alert('error', 'Wystąpił błąd z połączeniem. Spróbuj ponownie.');
+                });
+            },
             addStage: function() {
                 this.stages.push({
-                    number: this.stageLength++,
+                    number: this.stages.length + 1,
                     question: {
                         content: 'Treśc pytania',
                         answers: [{
@@ -89,22 +104,15 @@
                         }]
                     },
                 });
+                this.sortStages();
             },
             removeStage: function(index) {
                 this.stages.splice(index, 1);
+                this.currentStage = index - 1;
                 this.sortStages();
             },
             showStage: function(index) {
                 this.currentStage = index;
-            },
-            saveQuestion: function(content, number) {
-                let stage = this.getStage(number);
-                stage.question.content = content;
-            },
-            getStage: function(number) {
-                return this.stages.find(function(stage) {
-                    return stage.number = number;
-                });
             },
             sortStages: function() {
                 this.stages.forEach(function(stage, index){
@@ -115,6 +123,26 @@
                     if (stage.number != index++) {
                         stage.number = index++;
                     }
+                });
+            },
+            validateSettings: function(settings) {
+                if (!settings.title) {
+                    this.alert('error', 'Tytuł gry jest wymagany');
+                }
+
+                if (!settings.category) {
+                    this.alert('error', 'Kategoria gry jest wymagana');
+                }
+
+                if (settings.title && settings.category) {
+                    return true;
+                }
+            },
+            alert: function(type, text) {
+                this.$notify({
+                    group: 'alert',
+                    type: type,
+                    text: text,
                 });
             },
         },

@@ -5,10 +5,11 @@
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="question" class="form-label">Pytanie: <strong>{{ question }}</strong></label>
-                        <input id="question" type="text" class="form-control" v-model="question">
+                        <input id="question" type="text" class="form-control" v-model="question" :refresh="refresh">
                     </div>
-                    <div class="col-6 mb-2" v-for="answer in currentStage.question.answers">
-                        <button class="btn btn-block" v-bind:class="{ 'btn-success': answer.type == 'correct', 'btn-danger': answer.type == 'wrong' }" v-on:click="markAsCorrect(answer)">{{ answer.content }}</button>
+                    <template>
+                        <answer v-for="answer in currentStage.question.answers" :answer="answer" :key="answer.content" v-on:markAsCorrect="markAsCorrect"></answer>
+                    </template>
                     </div>
                 </div>
             </div>
@@ -25,12 +26,20 @@
         },
         data: function() {
             return {
-                question: '',
+                question: this.currentStage.question.content,
             }
+        },
+        components: {
+            answer: require('../create-game/Answer.vue').default,
+        },
+        computed: {
+            refresh: function() {
+                return this.question = this.currentStage.question.content;
+            },
         },
         watch: {
             question: function() {
-                this.saveQuestion();
+                this.currentStage.question.content = this.question;
             }
         },
         methods: {
@@ -48,9 +57,6 @@
             },
             markAsWrong: function(answer) {
                 answer.type = 'wrong';
-            },
-            saveQuestion: function() {
-                this.$emit('saveQuestion', this.question, this.currentStage.number);
             },
         },
     }
