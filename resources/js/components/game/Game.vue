@@ -35,10 +35,10 @@
             }
         },
         components: {
-            settings: require('./Settings.vue').default,
-            stage: require('./Stage.vue').default,
-            questionsRange: require('./QuestionsRange.vue').default,
-            endGame: require('./EndGame.vue').default,
+            settings: require('../game/Settings.vue').default,
+            stage: require('../game/Stage.vue').default,
+            questionsRange: require('../game/QuestionsRange.vue').default,
+            endGame: require('../game/EndGame.vue').default,
         },
         methods: {
             startGame: function(nickname, playerId) {

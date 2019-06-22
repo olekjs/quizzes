@@ -27,7 +27,7 @@
             }
         },
         components: {
-            answer: require('./stage/Answer.vue').default,
+            answer: require('../game/stage/Answer.vue').default,
         },
         computed: {
             shuffledAnswers: function() {
