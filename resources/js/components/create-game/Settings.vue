@@ -72,7 +72,7 @@
             }
         },
         mounted: function() {
-            if (Object.keys(this.existSettings).length > 0) {
+            if (typeof !this.existSettings == "undefined" && Object.keys(this.existSettings).length > 0) {
                 this.settings = {
                     title: this.existSettings.title,
                     category: this.existSettings.category_id,

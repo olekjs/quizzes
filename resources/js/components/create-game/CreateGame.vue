@@ -35,9 +35,7 @@
             existSettings: {
                 type: Object,
             },
-            uniqueCode: {
-                type: String,
-            }
+            uniqueCode: null,
         },
         data: function() {
              return {
@@ -72,7 +70,7 @@
             question: require('../create-game/Question.vue').default,
         },
         mounted: function() {
-            if (this.existStages.length > 0) {
+            if (typeof !this.existStages == "undefined" && this.existStages.length > 0) {
                 this.stages = this.existStages;
             }
         },
