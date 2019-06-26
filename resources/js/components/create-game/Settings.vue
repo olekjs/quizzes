@@ -58,6 +58,9 @@
                 required: true,
                 type: Array,
             },
+            existSettings: {
+                type: Object,
+            }
         },
         data: function() {
             return {
@@ -66,6 +69,15 @@
                     category: '',
                     password: '',
                 }
+            }
+        },
+        mounted: function() {
+            if (Object.keys(this.existSettings).length > 0) {
+                this.settings = {
+                    title: this.existSettings.title,
+                    category: this.existSettings.category_id,
+                    password: this.existSettings.password,
+                };
             }
         },
         methods: {

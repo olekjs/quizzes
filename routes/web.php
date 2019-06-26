@@ -6,6 +6,8 @@ Route::get('', 'HomeController@index')->name('home');
 Route::group(['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin'], function () {
     Route::group(['as' => 'game.', 'prefix' => 'game'], function () {
         Route::get('', 'GameController@index')->name('index');
+        Route::get('create', 'GameController@create')->name('create');
+        Route::get('edit/{uniqueCode}', 'GameController@edit')->name('edit');
     });
 });
 

@@ -1,4 +1,4 @@
 <?php
 
 Route::put('save/player', 'GameController@savePlayer');
-Route::post('create/game', 'GameController@create');
+Route::post('save/game', 'GameController@save');

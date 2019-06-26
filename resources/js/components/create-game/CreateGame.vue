@@ -4,17 +4,13 @@
             <div class="col-md-4">
                 <div class="card shadow">
                     <div class="card-body">
-                        <!-- 
-                            @TODO
-                            Limit poziomów
-                         -->
                         <stage :stages="stages" v-on:addStage="addStage" v-on:removeStage="removeStage" v-on:showStage="showStage"></stage>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
                 <template>
-                    <settings :categories="categories" v-on:saveGame="saveGame"></settings>
+                    <settings :categories="categories" v-on:saveGame="saveGame" :existSettings="existSettings"></settings>
                 </template>
                 <template>
                     <question :currentStage="stages[currentStage]"></question>
@@ -33,6 +29,15 @@
                 required: true,
                 type: Array,
             },
+            existStages: {
+                type: Array,
+            },
+            existSettings: {
+                type: Object,
+            },
+            uniqueCode: {
+                type: String,
+            }
         },
         data: function() {
              return {
@@ -66,22 +71,33 @@
             stage: require('../create-game/Stage.vue').default,
             question: require('../create-game/Question.vue').default,
         },
+        mounted: function() {
+            if (this.existStages.length > 0) {
+                this.stages = this.existStages;
+            }
+        },
         methods: {
             saveGame: function(settings) {
                 if (!this.validateSettings(settings)) {
                     return;
                 }
 
-                axios.post('/api/create/game', {
+                axios.post('/api/save/game', {
                     stages: this.stages,
                     settings: settings,
+                    unique_code: this.uniqueCode,
                 }).then((response) => {
-                    console.log(response.data);
+                    //odeslij gdzies z komunikatem
                 }).catch(() => {
                     this.alert('error', 'Wystąpił błąd z połączeniem. Spróbuj ponownie.');
                 });
             },
             addStage: function() {
+                if (this.stages.length === 20) {
+                    this.alert('error', 'Dopuszczana liczba poziomów: 20.');
+                    return;
+                }
+
                 this.stages.push({
                     number: this.stages.length + 1,
                     question: {

@@ -2,6 +2,6 @@
 
 @section('content')
 <div class="container-fluid">
-    index
+    <create-game :categories="{{ $categories }}"></create-game>
 </div>
 @endsection

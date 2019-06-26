@@ -22,7 +22,7 @@
         },
         watch: {
             content: function() {
-                this.answer.content = this.content;
+                this.saveAnswer();
             }
         },
         computed: {
@@ -34,6 +34,9 @@
             markAsCorrect: function() {
                 this.$emit('markAsCorrect', this.answer);
             },
+            saveAnswer: _.debounce(function(){
+                this.answer.content = this.content;
+            }, 2000),
         },
     }
 </script>
